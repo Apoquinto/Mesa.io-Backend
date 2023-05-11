@@ -9,6 +9,8 @@ import { Repository } from 'typeorm';
 import { Dish } from './dish.entity';
 import { CreateDishDTO } from './dto/create-dish.dto';
 import { UpdateDishDTO } from './dto/update-dish.dto';
+import { UpdateDishReponseDTO } from './dto/update-dish-response.dto';
+import { DeleteDishReponseDTO } from './dto/delete-dish-response.dto';
 
 @Injectable()
 export class DishesService {
@@ -64,22 +66,32 @@ export class DishesService {
 
   async updateDish(
     id: number,
-    user: UpdateDishDTO,
-  ): Promise<number | NotFoundException> {
+    dish: UpdateDishDTO,
+  ): Promise<UpdateDishReponseDTO | NotFoundException> {
     if (!(await this.checkDishExist(id)))
       return new NotFoundException(
-        `The requested dish could not be found. Please verify that the ID ${id} is valid and try again.`,
+        `The requested dish could not be found. Please verify that the Id '${id}' is valid and try again.`,
       );
-    await this.dishRepository.update({ id }, user);
-    return id;
+    await this.dishRepository.update({ id }, dish);
+    return {
+      title: 'Updated successfully',
+      message: `The dish '${id}' has been updated successfully.`,
+      updated_id: id,
+    };
   }
 
-  async deleteDish(id: number): Promise<number | NotFoundException> {
+  async deleteDish(
+    id: number,
+  ): Promise<DeleteDishReponseDTO | NotFoundException> {
     if (!(await this.checkDishExist(id)))
       return new NotFoundException(
-        `The requested dish could not be found. Please verify that the ID ${id} is valid and try again.`,
+        `The requested dish could not be found. Please verify that the Id '${id}' is valid and try again.`,
       );
     await this.dishRepository.delete(id);
-    return id;
+    return {
+      title: 'Deleted successfully',
+      message: `The dish '${id}' has been deleted successfully.`,
+      deleted_id: id,
+    };
   }
 }

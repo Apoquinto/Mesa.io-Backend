@@ -9,10 +9,14 @@ import {
   Put,
   HttpException,
 } from '@nestjs/common';
-import { CreateDishDTO } from './dto/create-dish.dto';
+
 import { DishesService } from './dishes.service';
 import { Dish } from './dish.entity';
+
+import { CreateDishDTO } from './dto/create-dish.dto';
 import { UpdateDishDTO } from './dto/update-dish.dto';
+import { DeleteDishReponseDTO } from './dto/delete-dish-response.dto';
+import { UpdateDishReponseDTO } from './dto/update-dish-response.dto';
 
 @Controller('dishes')
 export class DishesController {
@@ -35,18 +39,18 @@ export class DishesController {
     return this.dishesService.createDish(newDish);
   }
 
-  @Put()
+  @Put(':id')
   updateDish(
     @Param('id', ParseIntPipe) id: number,
     @Body() dish: UpdateDishDTO,
-  ) {
+  ): Promise<UpdateDishReponseDTO | HttpException> {
     return this.dishesService.updateDish(id, dish);
   }
 
   @Delete(':id')
   deleteDish(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<number | HttpException> {
+  ): Promise<DeleteDishReponseDTO | HttpException> {
     return this.dishesService.deleteDish(id);
   }
 }
