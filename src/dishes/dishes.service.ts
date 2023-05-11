@@ -15,4 +15,8 @@ export class DishesService {
     const newDish = this.dishRepository.create(dish);
     return this.dishRepository.save(newDish);
   }
+
+  getAllDishes() {
+    return this.dishRepository.find();
+  }
 }
