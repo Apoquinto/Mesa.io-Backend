@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  HttpException,
 } from '@nestjs/common';
 import { CreateDishDTO } from './dto/create-dish.dto';
 import { DishesService } from './dishes.service';
@@ -23,12 +24,14 @@ export class DishesController {
   }
 
   @Get(':id')
-  getDishById(@Param('id', ParseIntPipe) id: number): Promise<Dish> {
+  getDishById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Dish | HttpException> {
     return this.dishesService.getDishById(id);
   }
 
   @Post()
-  createDish(@Body() newDish: CreateDishDTO): Promise<Dish> {
+  createDish(@Body() newDish: CreateDishDTO): Promise<Dish | HttpException> {
     return this.dishesService.createDish(newDish);
   }
 
@@ -41,7 +44,9 @@ export class DishesController {
   }
 
   @Delete(':id')
-  deleteDish(@Param('id', ParseIntPipe) id: number): Promise<number> {
+  deleteDish(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<number | HttpException> {
     return this.dishesService.deleteDish(id);
   }
 }
