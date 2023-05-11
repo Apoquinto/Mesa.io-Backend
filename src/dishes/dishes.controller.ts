@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common';
 import { CreateDishDTO } from './dto/create-dish.dto';
 import { DishesService } from './dishes.service';
 import { Dish } from './dish.entity';
@@ -8,8 +15,13 @@ export class DishesController {
   constructor(private dishesService: DishesService) {}
 
   @Get()
-  getUsers(): Promise<Dish[]> {
+  getDishes(): Promise<Dish[]> {
     return this.dishesService.getAllDishes();
+  }
+
+  @Get(':id')
+  getDishById(@Param('id', ParseIntPipe) id: number): Promise<Dish> {
+    return this.dishesService.getDishById(id);
   }
 
   @Post()
