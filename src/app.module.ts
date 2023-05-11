@@ -5,6 +5,7 @@ import { DishesModule } from './dishes/dishes.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { MySqlConfigService } from './db/MySqlConfigService';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { MySqlConfigService } from './db/MySqlConfigService';
       imports: [ConfigModule]
     }),
     DishesModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
