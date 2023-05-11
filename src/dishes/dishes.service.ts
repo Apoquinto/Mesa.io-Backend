@@ -11,12 +11,20 @@ export class DishesService {
     @InjectRepository(Dish) private dishRepository: Repository<Dish>,
   ) {}
 
-  createDish(dish: CreateDishDTO) {
+  createDish(dish: CreateDishDTO): Promise<Dish> {
     const newDish = this.dishRepository.create(dish);
     return this.dishRepository.save(newDish);
   }
 
-  getAllDishes() {
+  getAllDishes(): Promise<Dish[]> {
     return this.dishRepository.find();
+  }
+
+  getDishById(id: number): Promise<Dish> {
+    return this.dishRepository.findOne({
+      where: {
+        id,
+      },
+    });
   }
 }
