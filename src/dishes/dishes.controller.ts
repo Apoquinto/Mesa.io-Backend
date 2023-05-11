@@ -6,10 +6,12 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
 } from '@nestjs/common';
 import { CreateDishDTO } from './dto/create-dish.dto';
 import { DishesService } from './dishes.service';
 import { Dish } from './dish.entity';
+import { UpdateDishDTO } from './dto/update-dish.dto';
 
 @Controller('dishes')
 export class DishesController {
@@ -28,6 +30,14 @@ export class DishesController {
   @Post()
   createDish(@Body() newDish: CreateDishDTO): Promise<Dish> {
     return this.dishesService.createDish(newDish);
+  }
+
+  @Put()
+  updateDish(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dish: UpdateDishDTO,
+  ) {
+    return this.dishesService.updateDish(id, dish);
   }
 
   @Delete(':id')

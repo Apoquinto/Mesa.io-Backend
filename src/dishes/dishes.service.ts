@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 import { Dish } from './dish.entity';
 import { CreateDishDTO } from './dto/create-dish.dto';
+import { UpdateDishDTO } from './dto/update-dish.dto';
 
 @Injectable()
 export class DishesService {
@@ -26,6 +27,11 @@ export class DishesService {
         id,
       },
     });
+  }
+
+  async updateDish(id: number, user: UpdateDishDTO): Promise<number> {
+    await this.dishRepository.update({ id }, user);
+    return id;
   }
 
   async deleteDish(id: number): Promise<number> {
