@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -27,5 +28,10 @@ export class DishesController {
   @Post()
   createDish(@Body() newDish: CreateDishDTO): Promise<Dish> {
     return this.dishesService.createDish(newDish);
+  }
+
+  @Delete(':id')
+  deleteDish(@Param('id', ParseIntPipe) id: number): Promise<number> {
+    return this.dishesService.deleteDish(id);
   }
 }
