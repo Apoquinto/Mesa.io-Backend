@@ -12,7 +12,7 @@ import { CategoriesModule } from './categories/categories.module';
     ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync({
       useClass: MySqlConfigService,
-      imports: [ConfigModule]
+      imports: [ConfigModule],
     }),
     DishesModule,
     CategoriesModule,

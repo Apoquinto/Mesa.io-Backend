@@ -28,4 +28,16 @@ export class CategoriesService {
   async findCategorieByName(name: string): Promise<Categorie | null> {
     return this.categorieRepository.findOne({ where: { name } });
   }
+
+  getAllCategories() {
+    return this.categorieRepository.find({});
+  }
+
+  findCategoriesByName(name: string) {
+    return this.categorieRepository
+      .createQueryBuilder()
+      .select()
+      .where(`MATCH(name) AGAINST ('${name}' IN BOOLEAN MODE)`)
+      .getMany();
+  }
 }

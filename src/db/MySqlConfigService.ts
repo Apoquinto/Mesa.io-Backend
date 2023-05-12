@@ -18,6 +18,7 @@ export class MySqlConfigService implements TypeOrmOptionsFactory {
       password: this.configService.get<string>('DATABASE_PASSWORD'),
       database: this.configService.get<string>('DATABASE'),
       entities: [Dish, Categorie],
+      migrations: ['src/db/migration/*{.ts,.js}'],
       synchronize: this.configService.get<boolean>('DEVELOPMENT'),
     };
   }
