@@ -33,11 +33,11 @@ export class CategoriesService {
     return this.categorieRepository.find({});
   }
 
-  findCategoriesByName(name: string) {
+  findCategoriesByName(name: string): Promise<Categorie[]> {
     return this.categorieRepository
       .createQueryBuilder()
       .select()
-      .where(`MATCH(name) AGAINST ('${name}' IN BOOLEAN MODE)`)
+      .where(`name REGEXP '${name}?'`)
       .getMany();
   }
 }
