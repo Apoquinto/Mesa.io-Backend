@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   HttpException,
+  Patch,
 } from '@nestjs/common';
 
 import { DishesService } from './dishes.service';
@@ -17,6 +18,7 @@ import { CreateDishDTO } from './dto/create-dish.dto';
 import { UpdateDishDTO } from './dto/update-dish.dto';
 import { DeleteDishReponseDTO } from './dto/delete-dish-response.dto';
 import { UpdateDishReponseDTO } from './dto/update-dish-response.dto';
+import { DishCategoriesDTO } from './dto/dish-categories.dto';
 
 @Controller('dishes')
 export class DishesController {
@@ -45,6 +47,14 @@ export class DishesController {
     @Body() dish: UpdateDishDTO,
   ): Promise<UpdateDishReponseDTO | HttpException> {
     return this.dishesService.updateDish(id, dish);
+  }
+
+  @Patch(':id/categories/add')
+  addCategories(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dish: DishCategoriesDTO,
+  ) {
+    return this.dishesService.addCategoriesToDish(id, dish.categories);
   }
 
   @Delete(':id')

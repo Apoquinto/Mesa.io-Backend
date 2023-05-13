@@ -13,6 +13,10 @@ import { UpdateDishDTO } from './dto/update-dish.dto';
 import { UpdateDishReponseDTO } from './dto/update-dish-response.dto';
 import { DeleteDishReponseDTO } from './dto/delete-dish-response.dto';
 import { CategoriesService } from 'src/categories/categories.service';
+import { Categorie } from 'src/categories/categorie.entity';
+import { createNotFoundException } from 'src/shared/exceptions/CreateNotFoundException';
+import { createConflicException } from 'src/shared/exceptions/CreateConflicException';
+import { DishCategoriesDTO } from './dto/dish-categories.dto';
 
 @Injectable()
 export class DishesService {
@@ -25,10 +29,7 @@ export class DishesService {
     // Normalize dish name to avoid false unique names
     dish.name = dish.name.toLowerCase().trim();
     const foundDish = await this.getDishByName(dish.name);
-    if (foundDish)
-      return new ConflictException(
-        `Unable to create the dish. The selected name '${dish.name}' is already in use. Please choose a different name for the dish`,
-      );
+    if (foundDish) return createConflicException('dish', 'name', dish.name);
     const categories = await this.categoriesService.findCategoriesByIds(
       dish.categories,
     );
@@ -51,10 +52,7 @@ export class DishesService {
         id,
       },
     });
-    if (!dish)
-      return new NotFoundException(
-        `The requested dish could not be found. Please verify that the ID ${id} is valid and try again.`,
-      );
+    if (!dish) return createNotFoundException('dish', id);
     return dish;
   }
 
@@ -75,14 +73,38 @@ export class DishesService {
     return isExist == null ? false : true;
   }
 
+  async addCategoriesToDish(
+    id: number,
+    categories: number[],
+  ): Promise<Dish | ConflictException> {
+    const dish: Dish = await this.dishRepository.findOne({
+      where: { id },
+      relations: {
+        categories: true,
+      },
+    });
+    if (!dish) return createConflicException('dish', 'name', dish.name);
+    const currentCategoriesIds: number[] = dish.categories.map(
+      (category) => category.id,
+    );
+    // Search only categories not includes in current categories
+    const newCategoriesIds: number[] = categories.filter(
+      (category) => !currentCategoriesIds.includes(category),
+    );
+    const newCategories: Categorie[] =
+      await this.categoriesService.findCategoriesByIds(newCategoriesIds);
+    // Add left categories to dish
+    dish.categories = [...dish.categories, ...newCategories];
+    const updatedDish = this.dishRepository.save(dish);
+
+    return updatedDish;
+  }
+
   async updateDish(
     id: number,
     dish: UpdateDishDTO,
   ): Promise<UpdateDishReponseDTO | NotFoundException> {
-    if (!(await this.checkDishExist(id)))
-      return new NotFoundException(
-        `The requested dish could not be found. Please verify that the Id '${id}' is valid and try again.`,
-      );
+    if (!(await this.checkDishExist(id))) createNotFoundException('dish', id);
     await this.dishRepository.update({ id }, dish);
     return {
       title: 'Updated successfully',
@@ -95,9 +117,7 @@ export class DishesService {
     id: number,
   ): Promise<DeleteDishReponseDTO | NotFoundException> {
     if (!(await this.checkDishExist(id)))
-      return new NotFoundException(
-        `The requested dish could not be found. Please verify that the Id '${id}' is valid and try again.`,
-      );
+      return createNotFoundException('dish', id);
     await this.dishRepository.delete(id);
     return {
       title: 'Deleted successfully',
