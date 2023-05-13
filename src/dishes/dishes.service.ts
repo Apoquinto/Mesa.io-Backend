@@ -99,13 +99,48 @@ export class DishesService {
       (category) => category.id,
     );
     // Search only categories not includes in current categories
-    const newCategoriesIds: number[] = categories.filter(
+    const missingCategoriesIds: number[] = categories.filter(
       (category) => !currentCategoriesIds.includes(category),
     );
-    const newCategories: Categorie[] =
-      await this.categoriesService.findCategoriesByIds(newCategoriesIds);
+    const missingCategories: Categorie[] =
+      await this.categoriesService.findCategoriesByIds(missingCategoriesIds);
     // Add left categories to dish
-    dish.categories = [...dish.categories, ...newCategories];
+    dish.categories = [...dish.categories, ...missingCategories];
+    const updatedDish = this.dishRepository.save(dish);
+
+    return updatedDish;
+  }
+
+  async updateCategories(
+    id: number,
+    categories: number[],
+  ): Promise<Dish | ConflictException> {
+    const dish: Dish = await this.dishRepository.findOne({
+      where: { id },
+      relations: {
+        categories: true,
+      },
+    });
+    if (!dish) return createNotFoundException('dish', id);
+    // Get current categories
+    const currentCategoriesIds: number[] = dish.categories.map(
+      (category) => category.id,
+    );
+    // Add missing categories
+    const missingCategoriesIds: number[] = categories.filter(
+      (category) => !currentCategoriesIds.includes(category),
+    );
+    const missingCategories: Categorie[] =
+      await this.categoriesService.findCategoriesByIds(missingCategoriesIds);
+    // Remove deleted categories
+    const removedCategoriesIds: number[] = currentCategoriesIds.filter(
+      (category) => !categories.includes(category),
+    );
+    const filteredCategories = dish.categories.filter(
+      (category) => !removedCategoriesIds.includes(category.id),
+    );
+    // Add filtered and missing categories
+    dish.categories = [...filteredCategories, ...missingCategories];
     const updatedDish = this.dishRepository.save(dish);
 
     return updatedDish;
