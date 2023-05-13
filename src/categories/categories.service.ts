@@ -1,9 +1,15 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Categorie } from './categorie.entity';
 import { CreateCategorieDTO } from './dto/create-categorie.dto';
+import { UpdateCategorieDTO } from './dto/update-categorie.dto';
+import { UpdateCategorieResponseDTO } from './dto/update-categorie-response.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -39,5 +45,27 @@ export class CategoriesService {
       .select()
       .where(`name REGEXP '${name}?'`)
       .getMany();
+  }
+
+  async updateCategorie(
+    id: number,
+    categorie: UpdateCategorieDTO,
+  ): Promise<UpdateCategorieResponseDTO | NotFoundException> {
+    const categorieFound: Categorie = await this.categorieRepository.findOne({
+      where: { id },
+    });
+    if (!categorieFound)
+      return new NotFoundException(
+        `The requested categorie could not be found. Please verify that the Id '${id}' is valid and try again.`,
+      );
+    const updatedCategorie = await this.categorieRepository.save({
+      ...categorieFound,
+      ...categorie,
+    });
+    return {
+      title: 'Updated successfully',
+      message: `The category '${id}' has been updated successfully.`,
+      updatedCategorie,
+    };
   }
 }
