@@ -9,6 +9,9 @@ import {
   Put,
   HttpException,
   Patch,
+  Query,
+  ParseArrayPipe,
+  DefaultValuePipe,
 } from '@nestjs/common';
 
 import { DishesService } from './dishes.service';
@@ -20,6 +23,7 @@ import { DeleteDishReponseDTO } from './dto/delete-dish-response.dto';
 import { UpdateDishReponseDTO } from './dto/update-dish-response.dto';
 import { DishCategoriesDTO } from './dto/dish-categories.dto';
 import { Categorie } from 'src/categories/categorie.entity';
+import { EmptyArrayToNullPipe } from 'src/shared/pipes/EmptyArrayToNullPipe';
 
 @Controller('dishes')
 export class DishesController {
@@ -28,6 +32,15 @@ export class DishesController {
   @Get()
   getDishes(): Promise<Dish[]> {
     return this.dishesService.getAllDishes();
+  }
+
+  @Get('search?')
+  searchDishes(
+    @Query('name', new DefaultValuePipe('')) name: string,
+    @Query('categories', new DefaultValuePipe(''), new EmptyArrayToNullPipe())
+    categories: number[],
+  ): Promise<Dish[]> {
+    return this.dishesService.getDishes(name, categories);
   }
 
   @Get(':id')
