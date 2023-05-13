@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { Categorie } from './categorie.entity';
 import { CreateCategorieDTO } from './dto/create-categorie.dto';
@@ -46,6 +46,19 @@ export class CategoriesService {
       .select()
       .where(`name REGEXP '${name}?'`)
       .getMany();
+  }
+
+  /**
+   * Retrieves categories by their IDs.
+   * @param {number[]} ids - An array of category IDs.
+   * @returns {Promise<Categorie[]>} A promise that resolves to an array of Category objects.
+   */
+  findCategoriesByIds(ids: number[]): Promise<Categorie[]> {
+    return this.categorieRepository.find({
+      where: {
+        id: In(ids),
+      },
+    });
   }
 
   async updateCategorie(
