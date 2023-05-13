@@ -5,7 +5,7 @@ import {
   Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 
 import { Dish } from './dish.entity';
 import { CreateDishDTO } from './dto/create-dish.dto';
@@ -16,7 +16,6 @@ import { CategoriesService } from 'src/categories/categories.service';
 import { Categorie } from 'src/categories/categorie.entity';
 import { createNotFoundException } from 'src/shared/exceptions/CreateNotFoundException';
 import { createConflicException } from 'src/shared/exceptions/CreateConflicException';
-import { DishCategoriesDTO } from './dto/dish-categories.dto';
 
 @Injectable()
 export class DishesService {
@@ -36,6 +35,18 @@ export class DishesService {
     // Override categories ids with Categories
     const newDish = this.dishRepository.create({ ...dish, categories });
     return this.dishRepository.save(newDish);
+  }
+
+  getDishes(search: string, categories: number[]): Promise<Dish[]> {
+    const filters = {};
+    if (search) filters['name'] = Like(`%${categories}%`);
+    if (categories) filters['categories'] = { id: In(categories) };
+    return this.dishRepository.find({
+      where: filters,
+      relations: {
+        categories: true,
+      },
+    });
   }
 
   getAllDishes(): Promise<Dish[]> {
