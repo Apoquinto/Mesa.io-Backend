@@ -100,6 +100,25 @@ export class DishesService {
     return updatedDish;
   }
 
+  async removeCategoriesToDish(
+    id: number,
+    categories: number[],
+  ): Promise<Dish | ConflictException> {
+    const dish: Dish = await this.dishRepository.findOne({
+      where: { id },
+      relations: {
+        categories: true,
+      },
+    });
+    if (!dish) return createNotFoundException('dish', id);
+    dish.categories = dish.categories.filter(
+      (category) => !categories.includes(category.id),
+    );
+    const updatedDish = this.dishRepository.save(dish);
+
+    return updatedDish;
+  }
+
   async updateDish(
     id: number,
     dish: UpdateDishDTO,

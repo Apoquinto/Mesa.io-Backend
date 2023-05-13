@@ -57,6 +57,14 @@ export class DishesController {
     return this.dishesService.addCategoriesToDish(id, dish.categories);
   }
 
+  @Patch(':id/categories/remove')
+  removeCategories(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dish: DishCategoriesDTO,
+  ) {
+    return this.dishesService.removeCategoriesToDish(id, dish.categories);
+  }
+
   @Delete(':id')
   deleteDish(
     @Param('id', ParseIntPipe) id: number,
