@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
+  Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -11,11 +12,13 @@ import { CreateDishDTO } from './dto/create-dish.dto';
 import { UpdateDishDTO } from './dto/update-dish.dto';
 import { UpdateDishReponseDTO } from './dto/update-dish-response.dto';
 import { DeleteDishReponseDTO } from './dto/delete-dish-response.dto';
+import { CategoriesService } from 'src/categories/categories.service';
 
 @Injectable()
 export class DishesService {
   constructor(
     @InjectRepository(Dish) private dishRepository: Repository<Dish>,
+    @Inject(CategoriesService) private categoriesService: CategoriesService,
   ) {}
 
   async createDish(dish: CreateDishDTO): Promise<Dish | ConflictException> {
@@ -26,12 +29,20 @@ export class DishesService {
       return new ConflictException(
         `Unable to create the dish. The selected name '${dish.name}' is already in use. Please choose a different name for the dish`,
       );
-    const newDish = this.dishRepository.create(dish);
+    const categories = await this.categoriesService.findCategoriesByIds(
+      dish.categories,
+    );
+    // Override categories ids with Categories
+    const newDish = this.dishRepository.create({ ...dish, categories });
     return this.dishRepository.save(newDish);
   }
 
   getAllDishes(): Promise<Dish[]> {
-    return this.dishRepository.find();
+    return this.dishRepository.find({
+      relations: {
+        categories: true,
+      },
+    });
   }
 
   async getDishById(id: number): Promise<Dish | NotFoundException> {
