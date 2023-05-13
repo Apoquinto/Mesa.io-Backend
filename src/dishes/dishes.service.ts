@@ -83,7 +83,7 @@ export class DishesService {
         categories: true,
       },
     });
-    if (!dish) return createConflicException('dish', 'name', dish.name);
+    if (!dish) return createNotFoundException('dish', id);
     const currentCategoriesIds: number[] = dish.categories.map(
       (category) => category.id,
     );
