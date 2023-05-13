@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   Param,
@@ -15,6 +16,7 @@ import { Categorie } from './categorie.entity';
 import { CreateCategorieDTO } from './dto/create-categorie.dto';
 import { UpdateCategorieDTO } from './dto/update-categorie.dto';
 import { UpdateCategorieResponseDTO } from './dto/update-categorie-response.dto';
+import { DeleteCategorieReponseDTO } from './dto/delete-categorie-response.dto';
 
 @Controller('categories')
 export class CategoriesController {
@@ -37,11 +39,18 @@ export class CategoriesController {
     return this.categorieService.findCategoriesByName(name);
   }
 
-  @Put('')
+  @Put(':id')
   updateCategorie(
     @Param('id', ParseIntPipe) id: number,
     @Body() categorieUpdated: UpdateCategorieDTO,
   ): Promise<UpdateCategorieResponseDTO | HttpException> {
     return this.categorieService.updateCategorie(id, categorieUpdated);
+  }
+
+  @Delete(':id')
+  deleteCategorie(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<DeleteCategorieReponseDTO | HttpException> {
+    return this.categorieService.deleteCategorie(id);
   }
 }

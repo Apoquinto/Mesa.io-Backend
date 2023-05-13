@@ -10,6 +10,7 @@ import { Categorie } from './categorie.entity';
 import { CreateCategorieDTO } from './dto/create-categorie.dto';
 import { UpdateCategorieDTO } from './dto/update-categorie.dto';
 import { UpdateCategorieResponseDTO } from './dto/update-categorie-response.dto';
+import { DeleteCategorieReponseDTO } from './dto/delete-categorie-response.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -66,6 +67,26 @@ export class CategoriesService {
       title: 'Updated successfully',
       message: `The category '${id}' has been updated successfully.`,
       updatedCategorie,
+    };
+  }
+
+  async deleteCategorie(
+    id: number,
+  ): Promise<DeleteCategorieReponseDTO | NotFoundException> {
+    const categorieFound: Categorie = await this.categorieRepository.findOne({
+      where: { id },
+    });
+    if (!categorieFound)
+      return new NotFoundException(
+        `The requested categorie could not be found. Please verify that the Id '${id}' is valid and try again.`,
+      );
+    const removedCategorie = await this.categorieRepository.remove(
+      categorieFound,
+    );
+    return {
+      title: 'Removed successfully',
+      message: `The category '${id}' has been deleted successfully.`,
+      deleted_categorie: removedCategorie,
     };
   }
 }
