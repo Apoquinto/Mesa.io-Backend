@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Categorie } from 'src/categories/categorie.entity';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({ name: 'dishes' })
 export class Dish {
@@ -16,4 +23,8 @@ export class Dish {
 
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
+
+  @ManyToMany(() => Categorie)
+  @JoinTable()
+  categories: Categorie[];
 }
