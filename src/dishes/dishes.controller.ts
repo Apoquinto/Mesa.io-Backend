@@ -19,6 +19,7 @@ import { UpdateDishDTO } from './dto/update-dish.dto';
 import { DeleteDishReponseDTO } from './dto/delete-dish-response.dto';
 import { UpdateDishReponseDTO } from './dto/update-dish-response.dto';
 import { DishCategoriesDTO } from './dto/dish-categories.dto';
+import { Categorie } from 'src/categories/categorie.entity';
 
 @Controller('dishes')
 export class DishesController {
@@ -34,6 +35,13 @@ export class DishesController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Dish | HttpException> {
     return this.dishesService.getDishById(id);
+  }
+
+  @Get(':id/categories')
+  getDishCategories(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Categorie[] | HttpException> {
+    return this.dishesService.getCategories(id);
   }
 
   @Post()

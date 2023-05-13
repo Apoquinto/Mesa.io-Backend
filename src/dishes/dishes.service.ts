@@ -73,6 +73,17 @@ export class DishesService {
     return isExist == null ? false : true;
   }
 
+  async getCategories(id: number): Promise<Categorie[] | NotFoundException> {
+    const dish: Dish = await this.dishRepository.findOne({
+      where: { id },
+      relations: {
+        categories: true,
+      },
+    });
+    if (!dish) return createNotFoundException('dish', id);
+    return dish.categories;
+  }
+
   async addCategoriesToDish(
     id: number,
     categories: number[],
