@@ -11,6 +11,8 @@ import { CreateCategorieDTO } from './dto/create-categorie.dto';
 import { UpdateCategorieDTO } from './dto/update-categorie.dto';
 import { UpdateCategorieResponseDTO } from './dto/update-categorie-response.dto';
 import { DeleteCategorieReponseDTO } from './dto/delete-categorie-response.dto';
+import { createConflicException } from 'src/shared/exceptions/CreateConflicException';
+import { createNotFoundException } from 'src/shared/exceptions/CreateNotFoundException';
 
 @Injectable()
 export class CategoriesService {
@@ -25,9 +27,7 @@ export class CategoriesService {
     categorie.name = categorie.name.toLowerCase().trim();
     const categorieFound = await this.findCategorieByName(categorie.name);
     if (categorieFound)
-      return new ConflictException(
-        `Unable to create the categorie. The selected name '${categorie.name}' is already in use. Please choose a different name for the categorie`,
-      );
+      return createConflicException('category', 'name', categorie.name);
     const newCategorie = this.categorieRepository.create(categorie);
     return this.categorieRepository.save(newCategorie);
   }
@@ -37,7 +37,7 @@ export class CategoriesService {
   }
 
   getAllCategories() {
-    return this.categorieRepository.find({});
+    return this.categorieRepository.find();
   }
 
   findCategoriesByName(name: string): Promise<Categorie[]> {
@@ -68,10 +68,7 @@ export class CategoriesService {
     const categorieFound: Categorie = await this.categorieRepository.findOne({
       where: { id },
     });
-    if (!categorieFound)
-      return new NotFoundException(
-        `The requested categorie could not be found. Please verify that the Id '${id}' is valid and try again.`,
-      );
+    if (!categorieFound) return createNotFoundException('category', id);
     const updatedCategorie = await this.categorieRepository.save({
       ...categorieFound,
       ...categorie,
@@ -89,10 +86,7 @@ export class CategoriesService {
     const categorieFound: Categorie = await this.categorieRepository.findOne({
       where: { id },
     });
-    if (!categorieFound)
-      return new NotFoundException(
-        `The requested categorie could not be found. Please verify that the Id '${id}' is valid and try again.`,
-      );
+    if (!categorieFound) return createNotFoundException('category', id);
     const removedCategorie = await this.categorieRepository.remove(
       categorieFound,
     );
