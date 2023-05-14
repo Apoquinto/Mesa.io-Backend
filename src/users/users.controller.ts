@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   Param,
@@ -41,5 +42,12 @@ export class UsersController {
     @Body() user: UpdateUserDTO,
   ): Promise<DataResponse<User> | HttpException> {
     return this.usersService.updateUser(id, user);
+  }
+
+  @Delete(':id')
+  deleteUser(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<DataResponse<User> | HttpException> {
+    return this.usersService.deleteUser(id);
   }
 }

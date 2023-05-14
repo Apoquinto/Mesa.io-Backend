@@ -13,6 +13,7 @@ import { createNotFoundException } from 'src/shared/exceptions/CreateNotFoundExc
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { DataResponse } from 'src/shared/responses/DataResponse/DataResponse';
 import { createDataResponse } from 'src/shared/responses/DataResponse/createDataResponse';
+import { DeleteUserDTO } from './dto/delete-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -55,5 +56,16 @@ export class UsersService {
       ...user,
     });
     return createDataResponse('user', 'updated', id, updatedUser);
+  }
+
+  async deleteUser(
+    id: number,
+  ): Promise<DataResponse<User> | NotFoundException> {
+    const foundUser = await this.userRepository.findOne({
+      where: { id },
+    });
+    if (!foundUser) return createNotFoundException('user', id);
+    const removedUser = await this.userRepository.remove(foundUser);
+    return createDataResponse('user', 'deleted', id, removedUser);
   }
 }
