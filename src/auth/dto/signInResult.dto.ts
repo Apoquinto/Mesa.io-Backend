@@ -1,3 +1,3 @@
-export interface SignInResult {
-  token: string;
+export interface SignInResultDTO {
+  access_token: string;
 }
