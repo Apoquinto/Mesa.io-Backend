@@ -12,6 +12,10 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
+  async getAllUsers(): Promise<User[]> {
+    return this.userRepository.find();
+  }
+
   async createUser(user: CreateUserDTO): Promise<User | ConflictException> {
     user.name = user.name.toLowerCase().trim();
     const foundUser = this.userRepository.findOne({
