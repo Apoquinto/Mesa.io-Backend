@@ -6,6 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { MySqlConfigService } from './db/MySqlConfigService';
 import { CategoriesModule } from './categories/categories.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -16,6 +18,7 @@ import { CategoriesModule } from './categories/categories.module';
     }),
     DishesModule,
     CategoriesModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
