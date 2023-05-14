@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpException, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { User } from './user.entity';
@@ -10,6 +18,13 @@ export class UsersController {
   @Get('')
   getAllUSers(): Promise<User[]> {
     return this.usersService.getAllUsers();
+  }
+
+  @Get(':id')
+  getUser(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<User | HttpException> {
+    return this.usersService.getUserById(id);
   }
 
   @Post('')
