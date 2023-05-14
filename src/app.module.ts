@@ -18,6 +18,7 @@ import { UsersModule } from './users/users.module';
     }),
     DishesModule,
     CategoriesModule,
+    AuthModule,
     UsersModule,
   ],
   controllers: [AppController],
