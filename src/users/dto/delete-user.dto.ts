@@ -1,4 +1,4 @@
 export class DeleteUserDTO {
-  name?: string;
+  username?: string;
   password?: string;
 }

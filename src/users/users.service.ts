@@ -33,12 +33,22 @@ export class UsersService {
     return foundUser;
   }
 
-  async createUser(user: CreateUserDTO): Promise<User | ConflictException> {
-    user.name = user.name.toLowerCase().trim();
+  async getUserByName(username: string): Promise<User | NotFoundException> {
     const foundUser = await this.userRepository.findOne({
-      where: { name: user.name },
+      where: { username },
     });
-    if (!foundUser) return createConflicException('user', 'name', user.name);
+    if (!foundUser)
+      return new NotFoundException('Incorrect username or password');
+    return foundUser;
+  }
+
+  async createUser(user: CreateUserDTO): Promise<User | ConflictException> {
+    user.username = user.username.toLowerCase().trim();
+    const foundUser = await this.userRepository.findOne({
+      where: { username: user.username },
+    });
+    if (!foundUser)
+      return createConflicException('user', 'name', user.username);
     const newUser = this.userRepository.create(user);
     return this.userRepository.save(newUser);
   }
