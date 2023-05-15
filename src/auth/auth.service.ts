@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -8,6 +9,9 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { SignInDTO } from './dto/SignIn.dto';
 import { SignInResultDTO } from './dto/signInResult.dto';
+import { createConflicException } from 'src/shared/exceptions/CreateConflicException';
+import { CreateUserDTO } from 'src/users/dto/create-user.dto';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -39,5 +43,9 @@ export class AuthService {
         );
       }
     }
+  }
+
+  async signUp(credentials: CreateUserDTO): Promise<User | ConflictException> {
+    return this.usersService.createUser(credentials);
   }
 }
