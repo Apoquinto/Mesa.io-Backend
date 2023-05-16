@@ -12,6 +12,7 @@ import {
   Query,
   ParseArrayPipe,
   DefaultValuePipe,
+  UseGuards,
 } from '@nestjs/common';
 
 import { DishesService } from './dishes.service';
@@ -24,12 +25,14 @@ import { UpdateDishReponseDTO } from './dto/update-dish-response.dto';
 import { DishCategoriesDTO } from './dto/dish-categories.dto';
 import { Categorie } from 'src/categories/categorie.entity';
 import { EmptyArrayToNullPipe } from 'src/shared/pipes/EmptyArrayToNullPipe';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('dishes')
+@UseGuards(AuthGuard)
 export class DishesController {
   constructor(private dishesService: DishesService) {}
 
-  @Get()
+  @Get('')
   getDishes(): Promise<Dish[]> {
     return this.dishesService.getAllDishes();
   }
