@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 
 import { CategoriesService } from './categories.service';
@@ -17,8 +18,10 @@ import { CreateCategorieDTO } from './dto/create-categorie.dto';
 import { UpdateCategorieDTO } from './dto/update-categorie.dto';
 import { UpdateCategorieResponseDTO } from './dto/update-categorie-response.dto';
 import { DeleteCategorieReponseDTO } from './dto/delete-categorie-response.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('categories')
+@UseGuards(AuthGuard)
 export class CategoriesController {
   constructor(private categorieService: CategoriesService) {}
 
