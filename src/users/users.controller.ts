@@ -31,6 +31,7 @@ export class UsersController {
   }
 
   @Get(':id')
+  @Roles(Role.Admin)
   getUser(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<User | HttpException> {
@@ -38,11 +39,13 @@ export class UsersController {
   }
 
   @Post('')
+  @Roles(Role.Admin)
   createUser(@Body() user: CreateUserDTO): Promise<User | HttpException> {
     return this.usersService.createUser(user);
   }
 
   @Put(':id')
+  @Roles(Role.Admin)
   updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() user: UpdateUserDTO,
@@ -51,6 +54,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @Roles(Role.Admin)
   deleteUser(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<DataResponse<User> | HttpException> {
