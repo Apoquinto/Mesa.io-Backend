@@ -31,7 +31,7 @@ export class AuthService {
         return new UnauthorizedException(
           'Invalid username or password. Please check your credentials and try again.',
         );
-      const payload = { username: foundUser.username };
+      const payload = { username: foundUser.username, role: foundUser.role };
       const access_token = await this.jwtService.signAsync(payload);
       return {
         access_token,
@@ -46,6 +46,7 @@ export class AuthService {
   }
 
   async signUp(credentials: CreateUserDTO): Promise<User | ConflictException> {
+    /* TODO: ADD password encriptation */
     return this.usersService.createUser(credentials);
   }
 }
