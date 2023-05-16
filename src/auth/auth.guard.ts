@@ -5,13 +5,17 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
+import { Role } from 'src/roles/role.enum';
+import { ROLES_KEY } from 'src/roles/roles.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
+    private reflector: Reflector,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -27,10 +31,17 @@ export class AuthGuard implements CanActivate {
         ignoreExpiration: true,
       });
       request['user'] = payload;
+      // Roles authorization
+      const requiredRoles = this.reflector.getAllAndOverride<Role[]>(
+        ROLES_KEY,
+        [context.getHandler(), context.getClass()],
+      );
+      console.log(requiredRoles);
+      if (!requiredRoles) return true;
+      return requiredRoles.some((role) => payload.role === role);
     } catch (error) {
       throw new UnauthorizedException();
     }
-    return true;
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
