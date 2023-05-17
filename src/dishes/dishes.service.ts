@@ -24,11 +24,19 @@ export class DishesService {
     @Inject(CategoriesService) private categoriesService: CategoriesService,
   ) {}
 
-  async createDish(dish: CreateDishDTO): Promise<Dish | ConflictException> {
+  async createDish(
+    dish: CreateDishDTO,
+    dishThumbnail?: Express.Multer.File | undefined,
+  ): Promise<Dish | ConflictException> {
     // Normalize dish name to avoid false unique names
     dish.name = dish.name.toLowerCase().trim();
     const foundDish = await this.getDishByName(dish.name);
     if (foundDish) return createConflicException('dish', 'name', dish.name);
+    // Validate dish thumbnail
+    if (dishThumbnail) {
+      console.log(dishThumbnail);
+    }
+    // Search categories
     const categories = await this.categoriesService.findCategoriesByIds(
       dish.categories,
     );
