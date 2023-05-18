@@ -196,9 +196,19 @@ export class DishesService {
   async updateDish(
     id: number,
     dish: UpdateDishDTO,
+    dishThumbnail?: Express.Multer.File | undefined,
   ): Promise<UpdateDishReponseDTO | NotFoundException> {
-    if (!(await this.checkDishExist(id))) createNotFoundException('dish', id);
-    await this.dishRepository.update({ id }, dish);
+    const dishFound: Dish = await this.dishRepository.findOne({
+      where: { id },
+    });
+    if (!dishFound) createNotFoundException('dish', id);
+    /* TODO: Manage update name and upload files to delete previes thumbnails */
+    if (dishThumbnail) {
+      const imageUpload: CloudinaryResponse =
+        await this.cloudinaryService.uploadFile(dishFound.name, dishThumbnail);
+      dishFound.dishThumbnailURL = imageUpload.secure_url;
+    }
+    await this.dishRepository.save({ ...dishFound, ...dish });
     return {
       title: 'Updated successfully',
       message: `The dish '${id}' has been updated successfully.`,

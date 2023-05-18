@@ -73,11 +73,13 @@ export class DishesController {
   }
 
   @Put(':id')
+  @UseInterceptors(FileInterceptor('dish-preview'))
   updateDish(
     @Param('id', ParseIntPipe) id: number,
     @Body() dish: UpdateDishDTO,
+    @UploadedFile() dishPreview: Express.Multer.File,
   ): Promise<UpdateDishReponseDTO | HttpException> {
-    return this.dishesService.updateDish(id, dish);
+    return this.dishesService.updateDish(id, dish, dishPreview);
   }
 
   @Patch(':id/categories/add')
