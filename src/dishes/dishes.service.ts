@@ -16,12 +16,15 @@ import { CategoriesService } from 'src/categories/categories.service';
 import { Categorie } from 'src/categories/categorie.entity';
 import { createNotFoundException } from 'src/shared/exceptions/CreateNotFoundException';
 import { createConflicException } from 'src/shared/exceptions/CreateConflicException';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { CloudinaryResponse } from 'src/cloudinary/dto/cloudinary.dto';
 
 @Injectable()
 export class DishesService {
   constructor(
     @InjectRepository(Dish) private dishRepository: Repository<Dish>,
     @Inject(CategoriesService) private categoriesService: CategoriesService,
+    private cloudinaryService: CloudinaryService,
   ) {}
 
   async createDish(
@@ -33,15 +36,25 @@ export class DishesService {
     const foundDish = await this.getDishByName(dish.name);
     if (foundDish) return createConflicException('dish', 'name', dish.name);
     // Validate dish thumbnail
+    /* TODO: Improve default dishThumbnail assingment */
+    /* TODO: Add image cleaner to reduce dishThumbnail final size */
+    let dishThumbnailURL =
+      'https://res.cloudinary.com/mesa-io/image/upload/v1684348633/default-placeholder_plsxa0.png';
     if (dishThumbnail) {
-      console.log(dishThumbnail);
+      const imageUpload: CloudinaryResponse =
+        await this.cloudinaryService.uploadFile(dishThumbnail);
+      dishThumbnailURL = imageUpload.url || dishThumbnailURL;
     }
     // Search categories
     const categories = await this.categoriesService.findCategoriesByIds(
       dish.categories,
     );
     // Override categories ids with Categories
-    const newDish = this.dishRepository.create({ ...dish, categories });
+    const newDish = this.dishRepository.create({
+      ...dish,
+      categories,
+      dishThumbnailURL,
+    });
     return this.dishRepository.save(newDish);
   }
 
