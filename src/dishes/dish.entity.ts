@@ -24,8 +24,11 @@ export class Dish {
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Column({ default: 'default.jpeg' })
-  dishThumbnail: string;
+  @Column({
+    default:
+      'https://res.cloudinary.com/mesa-io/image/upload/v1684348633/default-placeholder_plsxa0.png',
+  })
+  dishThumbnailURL: string;
 
   @ManyToMany(() => Categorie)
   @JoinTable()
