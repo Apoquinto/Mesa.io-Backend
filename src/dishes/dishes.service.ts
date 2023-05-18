@@ -35,16 +35,6 @@ export class DishesService {
     dish.name = dish.name.toLowerCase().trim();
     const foundDish = await this.getDishByName(dish.name);
     if (foundDish) return createConflicException('dish', 'name', dish.name);
-    // Validate dish thumbnail
-    /* TODO: Improve default dishThumbnail assingment */
-    /* TODO: Add image cleaner to reduce dishThumbnail final size */
-    let dishThumbnailURL =
-      'https://res.cloudinary.com/mesa-io/image/upload/v1684348633/default-placeholder_plsxa0.png';
-    if (dishThumbnail) {
-      const imageUpload: CloudinaryResponse =
-        await this.cloudinaryService.uploadFile(dishThumbnail);
-      dishThumbnailURL = imageUpload.url || dishThumbnailURL;
-    }
     // Search categories
     const categories = await this.categoriesService.findCategoriesByIds(
       dish.categories,
@@ -53,8 +43,14 @@ export class DishesService {
     const newDish = this.dishRepository.create({
       ...dish,
       categories,
-      dishThumbnailURL,
     });
+    /* TODO: Add image cleaner to reduce dishThumbnail final size */
+    /* TODO: Handle upload errors */
+    if (dishThumbnail) {
+      const imageUpload: CloudinaryResponse =
+        await this.cloudinaryService.uploadFile(dish.name, dishThumbnail);
+      newDish.dishThumbnailURL = imageUpload.secure_url;
+    }
     return this.dishRepository.save(newDish);
   }
 
