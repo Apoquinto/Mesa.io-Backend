@@ -219,9 +219,12 @@ export class DishesService {
   async deleteDish(
     id: number,
   ): Promise<DeleteDishReponseDTO | NotFoundException> {
-    if (!(await this.checkDishExist(id)))
-      return createNotFoundException('dish', id);
-    await this.dishRepository.delete(id);
+    const dishFound: Dish = await this.dishRepository.findOne({
+      where: { id },
+    });
+    if (!dishFound) createNotFoundException('dish', id);
+    await this.dishRepository.remove(dishFound);
+    await this.cloudinaryService.removeFile(dishFound.name);
     return {
       title: 'Deleted successfully',
       message: `The dish '${id}' has been deleted successfully.`,
