@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { MenusModule } from './menus/menus.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     AuthModule,
     UsersModule,
     CloudinaryModule,
+    MenusModule,
   ],
   controllers: [AppController],
   providers: [AppService],
