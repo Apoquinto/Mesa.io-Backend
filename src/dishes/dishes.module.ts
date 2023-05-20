@@ -15,5 +15,6 @@ import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
   ],
   controllers: [DishesController],
   providers: [DishesService],
+  exports: [DishesService],
 })
 export class DishesModule {}

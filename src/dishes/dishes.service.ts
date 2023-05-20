@@ -84,6 +84,18 @@ export class DishesService {
     return dish;
   }
 
+  async getDishesByIds(ids: number[]): Promise<Dish[]> {
+    const dishes: Dish[] = await this.dishRepository.find({
+      where: {
+        id: In(ids),
+      },
+      relations: {
+        categories: true,
+      },
+    });
+    return dishes;
+  }
+
   getDishByName(name: string): Promise<Dish> {
     return this.dishRepository.findOne({
       where: {
