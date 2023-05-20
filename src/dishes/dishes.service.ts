@@ -24,6 +24,16 @@ export class DishesService {
     @Inject(CategoriesService) private categoriesService: CategoriesService,
   ) {}
 
+
+//   findDishById(id: number): Promise<Dish[]> {
+//    return this.dishRepository.find({
+//      where: {
+//          id
+//       },
+//      });
+//  }
+
+
   async createDish(dish: CreateDishDTO): Promise<Dish | ConflictException> {
     // Normalize dish name to avoid false unique names
     dish.name = dish.name.toLowerCase().trim();
