@@ -7,6 +7,7 @@ import { Dish } from 'src/dishes/dish.entity';
 import { Categorie } from 'src/categories/categorie.entity';
 import { User } from 'src/users/user.entity';
 import { Menu } from 'src/menus/menu.entity';
+import { Section } from 'src/sections/section.entity';
 
 @Injectable()
 export class MySqlConfigService implements TypeOrmOptionsFactory {
@@ -20,7 +21,7 @@ export class MySqlConfigService implements TypeOrmOptionsFactory {
       username: this.configService.get<string>('DATABASE_USER'),
       password: this.configService.get<string>('DATABASE_PASSWORD'),
       database: this.configService.get<string>('DATABASE'),
-      entities: [Dish, Categorie, User, Menu],
+      entities: [Dish, Categorie, User, Menu, Section],
       migrations: ['src/db/migration/*{.ts,.js}'],
       synchronize: this.configService.get<boolean>('DEVELOPMENT'),
     };
