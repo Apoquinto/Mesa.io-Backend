@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { MenusModule } from './menus/menus.module';
+import { SectionsModule } from './sections/sections.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { MenusModule } from './menus/menus.module';
     UsersModule,
     CloudinaryModule,
     MenusModule,
+    SectionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
