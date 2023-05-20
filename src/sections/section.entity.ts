@@ -27,5 +27,5 @@ export class Section {
 
   @ManyToMany(() => Dish)
   @JoinTable()
-  categories: Dish[];
+  dishes: Dish[];
 }
