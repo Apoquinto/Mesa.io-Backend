@@ -3,10 +3,12 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { Dish } from 'src/dishes/dish.entity';
+import { Menu } from 'src/menus/menu.entity';
 
 @Entity({ name: 'sections' })
 export class Section {
@@ -28,4 +30,7 @@ export class Section {
   @ManyToMany(() => Dish)
   @JoinTable()
   dishes: Dish[];
+
+  @ManyToOne(() => Menu, (menu) => menu.sections)
+  menu: Menu;
 }

@@ -1,12 +1,7 @@
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Categorie } from 'src/categories/categorie.entity';
+import { Section } from 'src/sections/section.entity';
 
 @Entity({ name: 'menus' })
 export class Menu {
@@ -22,7 +17,6 @@ export class Menu {
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @ManyToMany(() => Categorie)
-  @JoinTable()
-  categories: Categorie[];
+  @OneToMany(() => Section, (section) => section.menu)
+  sections: Section[];
 }
