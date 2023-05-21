@@ -26,6 +26,9 @@ export class Dish {
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
+  @Column({ nullable: true })
+  dishThumbnailURL: string;
+
   @ManyToMany(() => Categorie)
   @JoinTable()
   categories: Categorie[];

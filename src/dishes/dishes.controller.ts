@@ -13,6 +13,8 @@ import {
   ParseArrayPipe,
   DefaultValuePipe,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 
 import { DishesService } from './dishes.service';
@@ -26,6 +28,7 @@ import { DishCategoriesDTO } from './dto/dish-categories.dto';
 import { Categorie } from 'src/categories/categorie.entity';
 import { EmptyArrayToNullPipe } from 'src/shared/pipes/EmptyArrayToNullPipe';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('dishes')
 @UseGuards(AuthGuard)
@@ -60,17 +63,23 @@ export class DishesController {
     return this.dishesService.getCategories(id);
   }
 
-  @Post()
-  createDish(@Body() newDish: CreateDishDTO): Promise<Dish | HttpException> {
-    return this.dishesService.createDish(newDish);
+  @Post('')
+  @UseInterceptors(FileInterceptor('dish-preview'))
+  createDish(
+    @Body() newDish: CreateDishDTO,
+    @UploadedFile() dishPreview: Express.Multer.File,
+  ): Promise<Dish | HttpException> {
+    return this.dishesService.createDish(newDish, dishPreview);
   }
 
   @Put(':id')
+  @UseInterceptors(FileInterceptor('dish-preview'))
   updateDish(
     @Param('id', ParseIntPipe) id: number,
     @Body() dish: UpdateDishDTO,
+    @UploadedFile() dishPreview: Express.Multer.File,
   ): Promise<UpdateDishReponseDTO | HttpException> {
-    return this.dishesService.updateDish(id, dish);
+    return this.dishesService.updateDish(id, dish, dishPreview);
   }
 
   @Patch(':id/categories/add')
