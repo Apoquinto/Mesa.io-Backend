@@ -17,6 +17,7 @@ import { CreateMenuDTO } from './dto/create-menu.dto';
 import { UpdateMenuDTO } from './dto/update-menu.dto';
 import { CreateSectionDTO } from 'src/sections/dto/create-section.dto';
 import { Section } from 'src/sections/section.entity';
+import { UpdateMenuSectionsDTO } from './dto/update-menu-sections.dto';
 
 @Controller('menus')
 export class MenusController {
@@ -40,6 +41,14 @@ export class MenusController {
     @Body() updatedMenu: UpdateMenuDTO,
   ): Promise<Menu | HttpException> {
     return this.menusService.updateMenu(id, updatedMenu);
+  }
+
+  @Patch(':id/sections/')
+  async updateSections(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updatedSections: UpdateMenuSectionsDTO,
+  ): Promise<Menu | HttpException> {
+    return this.menusService.updateSections(id, updatedSections.sections);
   }
 
   @Patch(':id/sections/add')
