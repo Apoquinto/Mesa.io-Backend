@@ -7,6 +7,7 @@ import { CreateSectionDTO } from './dto/create-section.dto';
 import { DishesService } from 'src/dishes/dishes.service';
 import { UpdateSectionDTO } from './dto/update-section.dto';
 import { createNotFoundException } from 'src/shared/exceptions/CreateNotFoundException';
+import { Menu } from 'src/menus/menu.entity';
 
 @Injectable()
 export class SectionsService {
@@ -24,10 +25,35 @@ export class SectionsService {
     });
   }
 
+  async getSectionsByIds(ids: number[]): Promise<Section[]> {
+    return await this.sectionsRepository.find({
+      where: { id: In(ids) },
+      relations: { dishes: true },
+    });
+  }
+
   async createSection(section: CreateSectionDTO): Promise<Section> {
     const newSection = this.sectionsRepository.create({
       ...section,
       dishes: [],
+      menu: new Menu(),
+    });
+    if (section.dishes) {
+      newSection.dishes = await this.dishesService.getDishesByIds(
+        section.dishes,
+      );
+    }
+    return this.sectionsRepository.save(newSection);
+  }
+
+  async createSectionWithMenu(
+    section: CreateSectionDTO,
+    menu: Menu,
+  ): Promise<Section> {
+    const newSection = this.sectionsRepository.create({
+      ...section,
+      dishes: [],
+      menu: menu,
     });
     if (section.dishes) {
       newSection.dishes = await this.dishesService.getDishesByIds(
