@@ -28,7 +28,7 @@ export class AuthService {
         credentials.username,
       );
 
-      const isSame = await compare(foundUser.password, credentials.password);
+      const isSame = await compare(credentials.password, foundUser.password);
 
       if (!isSame)
         return new UnauthorizedException(
@@ -36,6 +36,7 @@ export class AuthService {
         );
       const payload = { username: foundUser.username, role: foundUser.role };
       const access_token = await this.jwtService.signAsync(payload);
+
       return {
         access_token,
       };
