@@ -205,6 +205,7 @@ export class DishesService {
     return updatedDish;
   }
 
+  // TODO FIX CATEGORIES NOT UPDATED
   async updateDish(
     id: number,
     dish: UpdateDishDTO,
@@ -220,7 +221,16 @@ export class DishesService {
         await this.cloudinaryService.uploadFile(dishFound.name, dishThumbnail);
       dishFound.dishThumbnailURL = imageUpload.secure_url;
     }
-    await this.dishRepository.save({ ...dishFound, ...dish });
+    // Update categories
+    /* TODO: Improve categories update logic, can only query for missing dishes and filtering removed categories */
+    const updatedCategories = dish.categories
+      ? await this.categoriesService.findCategoriesByIds(dish.categories)
+      : dishFound.categories;
+    await this.dishRepository.save({
+      ...dishFound,
+      ...dish,
+      categories: updatedCategories,
+    });
     return {
       title: 'Updated successfully',
       message: `The dish '${id}' has been updated successfully.`,
