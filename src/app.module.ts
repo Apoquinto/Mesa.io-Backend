@@ -10,10 +10,12 @@ import { CategoriesModule } from './categories/categories.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from '@nestjs/jwt';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { MenusModule } from './menus/menus.module';
+import { SectionsModule } from './sections/sections.module';
 import { OrdersModule } from './orders/orders.module';
 import { EmailModule } from './email/email.module';
 import { MenuModule } from './menu/menu.module';
-
 
 @Module({
   imports: [
@@ -37,6 +39,9 @@ import { MenuModule } from './menu/menu.module';
     CategoriesModule,
     AuthModule,
     UsersModule,
+    CloudinaryModule,
+    MenusModule,
+    SectionsModule,
     OrdersModule,
     EmailModule,
     MenuModule,

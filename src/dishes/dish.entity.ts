@@ -30,11 +30,13 @@ export class Dish {
   @Column('simple-array')
   idsCategories: number[];
 
+  @Column({ nullable: true })
+  dishThumbnailURL: string;
+
   @ManyToMany(() => Categorie)
   @JoinTable()
   categories: Categorie[];
 
-  @OneToMany(() => Order, order => order.dish)
+  @OneToMany(() => Order, (order) => order.dish)
   orders: Order[];
 }
-

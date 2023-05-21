@@ -16,26 +16,42 @@ import { CategoriesService } from 'src/categories/categories.service';
 import { Categorie } from 'src/categories/categorie.entity';
 import { createNotFoundException } from 'src/shared/exceptions/CreateNotFoundException';
 import { createConflicException } from 'src/shared/exceptions/CreateConflicException';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { CloudinaryResponse } from 'src/cloudinary/dto/cloudinary.dto';
 
 @Injectable()
 export class DishesService {
   constructor(
     @InjectRepository(Dish) private dishRepository: Repository<Dish>,
     @Inject(CategoriesService) private categoriesService: CategoriesService,
+    private cloudinaryService: CloudinaryService,
   ) {}
 
-
-  async createDish(dish: CreateDishDTO): Promise<Dish | ConflictException> {
+  async createDish(
+    dish: CreateDishDTO,
+    dishThumbnail?: Express.Multer.File | undefined,
+  ): Promise<Dish | ConflictException> {
     // Normalize dish name to avoid false unique names
     dish.name = dish.name.toLowerCase().trim();
     const foundDish = await this.getDishByName(dish.name);
-    if (foundDish) return createConflicException('dish', 'name', dish.name)
-      const categories = await this.categoriesService.findCategoriesByIds(
-        dish.categories,
-      );
+    if (foundDish) return createConflicException('dish', 'name', dish.name);
+    // Search categories
+    const categories = await this.categoriesService.findCategoriesByIds(
+      dish.categories,
+    );
     // Override categories ids with Categories
-    const newDish = this.dishRepository.create({ ...dish, categories, idsCategories: dish.categories
+    const newDish = this.dishRepository.create({
+      ...dish,
+      categories,
+      idsCategories: dish.categories,
     });
+    /* TODO: Add image cleaner to reduce dishThumbnail final size */
+    /* TODO: Handle upload errors */
+    if (dishThumbnail) {
+      const imageUpload: CloudinaryResponse =
+        await this.cloudinaryService.uploadFile(dish.name, dishThumbnail);
+      newDish.dishThumbnailURL = imageUpload.secure_url;
+    }
     return this.dishRepository.save(newDish);
   }
 
@@ -64,10 +80,22 @@ export class DishesService {
       where: {
         id,
       },
-     // relations: ['categories']
+      // relations: ['categories']
     });
     if (!dish) return createNotFoundException('dish', id);
     return dish;
+  }
+
+  async getDishesByIds(ids: number[]): Promise<Dish[]> {
+    const dishes: Dish[] = await this.dishRepository.find({
+      where: {
+        id: In(ids),
+      },
+      relations: {
+        categories: true,
+      },
+    });
+    return dishes;
   }
 
   getDishByName(name: string): Promise<Dish> {
@@ -180,12 +208,32 @@ export class DishesService {
     return updatedDish;
   }
 
+  // TODO FIX CATEGORIES NOT UPDATED
   async updateDish(
     id: number,
     dish: UpdateDishDTO,
+    dishThumbnail?: Express.Multer.File | undefined,
   ): Promise<UpdateDishReponseDTO | NotFoundException> {
-    if (!(await this.checkDishExist(id))) createNotFoundException('dish', id);
-    await this.dishRepository.update({ id }, dish);
+    const dishFound: Dish = await this.dishRepository.findOne({
+      where: { id },
+    });
+    if (!dishFound) createNotFoundException('dish', id);
+    /* TODO: Manage update name and upload files to delete previes thumbnails */
+    if (dishThumbnail) {
+      const imageUpload: CloudinaryResponse =
+        await this.cloudinaryService.uploadFile(dishFound.name, dishThumbnail);
+      dishFound.dishThumbnailURL = imageUpload.secure_url;
+    }
+    // Update categories
+    /* TODO: Improve categories update logic, can only query for missing dishes and filtering removed categories */
+    const updatedCategories = dish.categories
+      ? await this.categoriesService.findCategoriesByIds(dish.categories)
+      : dishFound.categories;
+    await this.dishRepository.save({
+      ...dishFound,
+      ...dish,
+      categories: updatedCategories,
+    });
     return {
       title: 'Updated successfully',
       message: `The dish '${id}' has been updated successfully.`,
@@ -196,9 +244,12 @@ export class DishesService {
   async deleteDish(
     id: number,
   ): Promise<DeleteDishReponseDTO | NotFoundException> {
-    if (!(await this.checkDishExist(id)))
-      return createNotFoundException('dish', id);
-    await this.dishRepository.delete(id);
+    const dishFound: Dish = await this.dishRepository.findOne({
+      where: { id },
+    });
+    if (!dishFound) createNotFoundException('dish', id);
+    await this.dishRepository.remove(dishFound);
+    await this.cloudinaryService.removeFile(dishFound.name);
     return {
       title: 'Deleted successfully',
       message: `The dish '${id}' has been deleted successfully.`,
