@@ -15,7 +15,6 @@ import { MenusModule } from './menus/menus.module';
 import { SectionsModule } from './sections/sections.module';
 import { OrdersModule } from './orders/orders.module';
 import { EmailModule } from './email/email.module';
-import { MenuModule } from './menu/menu.module';
 
 @Module({
   imports: [
@@ -44,7 +43,6 @@ import { MenuModule } from './menu/menu.module';
     SectionsModule,
     OrdersModule,
     EmailModule,
-    MenuModule,
   ],
   controllers: [AppController],
   providers: [AppService],
