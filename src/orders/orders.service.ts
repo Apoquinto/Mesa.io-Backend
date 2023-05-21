@@ -25,8 +25,11 @@ export class OrdersService {
 
         if(!dishFound){ return new HttpException('Dish not found', HttpStatus.NOT_FOUND)}
         if(!userFound){return new HttpException('User not found', HttpStatus.NOT_FOUND)}
-    
-        const newOrder= this.orderRepository.create(order)
+
+        const dish = await this.dishesService.getDishById(order.dishId);
+        const newOrder= this.orderRepository.create({
+            ...order, dishName: dish.name
+        })
         return this.orderRepository.save(newOrder)
 
     }

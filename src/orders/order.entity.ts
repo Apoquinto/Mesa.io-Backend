@@ -14,6 +14,9 @@ export class Order{
     dishId:number;
 
     @Column()
+    dishName:string;
+
+    @Column()
     amount: number;
 
     @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
