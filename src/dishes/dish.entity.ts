@@ -1,9 +1,11 @@
 import { Categorie } from 'src/categories/categorie.entity';
+import { Order } from 'src/orders/order.entity';
 import {
   Column,
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -30,4 +32,8 @@ export class Dish {
   @ManyToMany(() => Categorie)
   @JoinTable()
   categories: Categorie[];
+
+  @OneToMany(() => Order, order => order.dish)
+  orders: Order[];
 }
+
