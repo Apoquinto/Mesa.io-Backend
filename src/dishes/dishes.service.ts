@@ -18,6 +18,7 @@ import { createNotFoundException } from 'src/shared/exceptions/CreateNotFoundExc
 import { createConflicException } from 'src/shared/exceptions/CreateConflicException';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { CloudinaryResponse } from 'src/cloudinary/dto/cloudinary.dto';
+import { PaginateDTO } from './dto/paginate.dto';
 
 @Injectable()
 export class DishesService {
@@ -54,16 +55,28 @@ export class DishesService {
     return this.dishRepository.save(newDish);
   }
 
-  getDishes(search: string, categories: number[]): Promise<Dish[]> {
+  async getDishes(
+    search: string,
+    categories: number[],
+    page: number = 0,
+    limit: number = 10,
+  ): Promise<PaginateDTO> {
     const filters = {};
-    if (search) filters['name'] = Like(`%${categories}%`);
+    if (search) filters['name'] = Like(`%${search}%`);
     if (categories) filters['categories'] = { id: In(categories) };
-    return this.dishRepository.find({
-      where: filters,
+    const [result, total] = await this.dishRepository.findAndCount({
+      where: { ...filters },
+      skip: page * limit,
+      take: limit,
       relations: {
         categories: true,
       },
     });
+    return {
+      page,
+      items: result,
+      totalItems: total,
+    };
   }
 
   getAllDishes(): Promise<Dish[]> {
