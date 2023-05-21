@@ -3,6 +3,7 @@ import { Order } from 'src/orders/order.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToMany,
@@ -25,6 +26,9 @@ export class Dish {
 
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
+
+  @Column('simple-array')
+  idsCategories: number[];
 
   @ManyToMany(() => Categorie)
   @JoinTable()

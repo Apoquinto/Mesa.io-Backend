@@ -25,25 +25,17 @@ export class DishesService {
   ) {}
 
 
-//   findDishById(id: number): Promise<Dish[]> {
-//    return this.dishRepository.find({
-//      where: {
-//          id
-//       },
-//      });
-//  }
-
-
   async createDish(dish: CreateDishDTO): Promise<Dish | ConflictException> {
     // Normalize dish name to avoid false unique names
     dish.name = dish.name.toLowerCase().trim();
     const foundDish = await this.getDishByName(dish.name);
-    if (foundDish) return createConflicException('dish', 'name', dish.name);
-    const categories = await this.categoriesService.findCategoriesByIds(
-      dish.categories,
-    );
+    if (foundDish) return createConflicException('dish', 'name', dish.name)
+      const categories = await this.categoriesService.findCategoriesByIds(
+        dish.categories,
+      );
     // Override categories ids with Categories
-    const newDish = this.dishRepository.create({ ...dish, categories });
+    const newDish = this.dishRepository.create({ ...dish, categories, idsCategories: dish.categories
+    });
     return this.dishRepository.save(newDish);
   }
 
@@ -72,6 +64,7 @@ export class DishesService {
       where: {
         id,
       },
+     // relations: ['categories']
     });
     if (!dish) return createNotFoundException('dish', id);
     return dish;
@@ -82,6 +75,7 @@ export class DishesService {
       where: {
         name,
       },
+      //relations: ['categories']
     });
   }
 

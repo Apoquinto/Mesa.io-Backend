@@ -21,7 +21,7 @@ import { DeleteCategorieReponseDTO } from './dto/delete-categorie-response.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('categories')
-@UseGuards(AuthGuard)
+//@UseGuards(AuthGuard)
 export class CategoriesController {
   constructor(private categorieService: CategoriesService) {}
 
