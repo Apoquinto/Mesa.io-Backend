@@ -38,7 +38,9 @@ export class AuthService {
       const access_token = await this.jwtService.signAsync(payload);
 
       return {
-        access_token,
+        role: foundUser.role,
+        email: foundUser.email,
+        access_token: access_token,
       };
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -50,8 +52,6 @@ export class AuthService {
   }
 
   async signUp(credentials: CreateUserDTO): Promise<User | ConflictException> {
-    /* TODO: ADD password encriptation */
-    console.log(credentials);
     return this.usersService.createUser(credentials);
   }
 }

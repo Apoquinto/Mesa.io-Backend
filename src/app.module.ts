@@ -11,6 +11,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { OrdersModule } from './orders/orders.module';
+import { EmailModule } from './email/email.module';
+import { MenuModule } from './menu/menu.module';
 
 
 @Module({
@@ -36,6 +38,8 @@ import { OrdersModule } from './orders/orders.module';
     AuthModule,
     UsersModule,
     OrdersModule,
+    EmailModule,
+    MenuModule,
   ],
   controllers: [AppController],
   providers: [AppService],

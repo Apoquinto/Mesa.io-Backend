@@ -12,9 +12,12 @@ export class User {
   @Column()
   password: string;
 
+  @Column({ unique: true })
+  email: string;
+
   @Column({ default: 'user' })
   role: string;
 
-  @OneToMany(() => Order, order => order.user)
+  @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
 }
