@@ -10,5 +10,6 @@ import { SectionsModule } from 'src/sections/sections.module';
   imports: [TypeOrmModule.forFeature([Menu]), SectionsModule],
   providers: [MenusService],
   controllers: [MenusController],
+  exports: [MenusService],
 })
 export class MenusModule {}
