@@ -2,8 +2,8 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsNumber,
   IsArray,
+  IsNumberString,
 } from 'class-validator';
 
 export class UpdateDishDTO {
@@ -15,9 +15,8 @@ export class UpdateDishDTO {
   @IsString()
   description?: string;
   @IsOptional()
-  @IsNumber()
+  @IsNumberString()
   price?: number;
   @IsOptional()
-  @IsArray()
   categories?: number[];
 }

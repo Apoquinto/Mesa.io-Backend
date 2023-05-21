@@ -1,7 +1,7 @@
 import {
   IsArray,
   IsNotEmpty,
-  IsNumber,
+  IsNumberString,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -30,13 +30,12 @@ export class CreateDishDTO {
    * @type {number}
    */
   @IsNotEmpty()
-  @IsNumber()
+  @IsNumberString()
   price: number;
   /**
    * The IDs of the categories linked to the dish.
    * @type {number[]}
    */
   @IsNotEmpty()
-  @IsArray()
   categories: number[];
 }
