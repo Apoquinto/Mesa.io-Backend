@@ -29,6 +29,7 @@ import { Categorie } from 'src/categories/categorie.entity';
 import { EmptyArrayToNullPipe } from 'src/shared/pipes/EmptyArrayToNullPipe';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { PaginateDTO } from './dto/paginate.dto';
 
 @Controller('dishes')
 @UseGuards(AuthGuard)
@@ -45,8 +46,12 @@ export class DishesController {
     @Query('name', new DefaultValuePipe('')) name: string,
     @Query('categories', new DefaultValuePipe(''), new EmptyArrayToNullPipe())
     categories: number[],
-  ): Promise<Dish[]> {
-    return this.dishesService.getDishes(name, categories);
+    @Query('page', new DefaultValuePipe(0), ParseIntPipe)
+    page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ): Promise<PaginateDTO> {
+    console.log(page, categories);
+    return this.dishesService.getDishes(name, categories, page, limit);
   }
 
   @Get(':id')
