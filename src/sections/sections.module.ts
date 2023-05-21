@@ -10,5 +10,6 @@ import { DishesModule } from 'src/dishes/dishes.module';
   imports: [TypeOrmModule.forFeature([Section]), DishesModule],
   providers: [SectionsService],
   controllers: [SectionsController],
+  exports: [SectionsService],
 })
 export class SectionsModule {}
