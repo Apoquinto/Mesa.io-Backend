@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsOptional, IsString, IsNumber } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsNumber,
+  IsArray,
+} from 'class-validator';
 
 export class UpdateDishDTO {
   @IsOptional()
@@ -11,4 +17,7 @@ export class UpdateDishDTO {
   @IsOptional()
   @IsNumber()
   price?: number;
+  @IsOptional()
+  @IsArray()
+  categories?: number[];
 }
