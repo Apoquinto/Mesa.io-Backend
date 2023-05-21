@@ -9,9 +9,9 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { SignInDTO } from './dto/SignIn.dto';
 import { SignInResultDTO } from './dto/signInResult.dto';
-import { createConflicException } from 'src/shared/exceptions/CreateConflicException';
 import { CreateUserDTO } from 'src/users/dto/create-user.dto';
 import { User } from 'src/users/user.entity';
+import { compare } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -27,7 +27,10 @@ export class AuthService {
       const foundUser = await this.usersService.getUserByName(
         credentials.username,
       );
-      if (foundUser.password != credentials.password)
+
+      const isSame = await compare(foundUser.password, credentials.password);
+
+      if (!isSame)
         return new UnauthorizedException(
           'Invalid username or password. Please check your credentials and try again.',
         );
@@ -47,6 +50,7 @@ export class AuthService {
 
   async signUp(credentials: CreateUserDTO): Promise<User | ConflictException> {
     /* TODO: ADD password encriptation */
+    console.log(credentials);
     return this.usersService.createUser(credentials);
   }
 }
