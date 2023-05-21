@@ -35,7 +35,14 @@ export class MenusService {
   }
 
   async getMenus(): Promise<Menu[]> {
-    return this.menusRepository.find();
+    return this.menusRepository.find({
+      relations: {
+        sections: {
+          menu: false,
+          dishes: true,
+        },
+      },
+    });
   }
 
   async updateMenu(
@@ -76,13 +83,16 @@ export class MenusService {
     return newSection;
   }
 
-  async deleteSection(id: number): Promise<Section | NotFoundException> {
+  async deleteSection(
+    id: number,
+    sectionId: number,
+  ): Promise<Section | NotFoundException> {
     const menuFound = await this.menusRepository.findOne({
       where: { id },
       relations: { sections: true },
     });
     if (!menuFound) return createNotFoundException('menu', id);
-    return await this.sectionsService.deleteSection(id);
+    return await this.sectionsService.deleteSection(sectionId);
   }
 
   async updateSections(
