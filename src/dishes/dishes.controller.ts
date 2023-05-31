@@ -13,6 +13,8 @@ import {
   ParseArrayPipe,
   DefaultValuePipe,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 
 import { DishesService } from './dishes.service';
@@ -26,6 +28,8 @@ import { DishCategoriesDTO } from './dto/dish-categories.dto';
 import { Categorie } from 'src/categories/categorie.entity';
 import { EmptyArrayToNullPipe } from 'src/shared/pipes/EmptyArrayToNullPipe';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { PaginateDTO } from './dto/paginate.dto';
 
 @Controller('dishes')
 @UseGuards(AuthGuard)
@@ -42,8 +46,12 @@ export class DishesController {
     @Query('name', new DefaultValuePipe('')) name: string,
     @Query('categories', new DefaultValuePipe(''), new EmptyArrayToNullPipe())
     categories: number[],
-  ): Promise<Dish[]> {
-    return this.dishesService.getDishes(name, categories);
+    @Query('page', new DefaultValuePipe(0), ParseIntPipe)
+    page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ): Promise<PaginateDTO> {
+    console.log(page, categories);
+    return this.dishesService.getDishes(name, categories, page, limit);
   }
 
   @Get(':id')
@@ -60,17 +68,23 @@ export class DishesController {
     return this.dishesService.getCategories(id);
   }
 
-  @Post()
-  createDish(@Body() newDish: CreateDishDTO): Promise<Dish | HttpException> {
-    return this.dishesService.createDish(newDish);
+  @Post('')
+  @UseInterceptors(FileInterceptor('dish-preview'))
+  createDish(
+    @Body() newDish: CreateDishDTO,
+    @UploadedFile() dishPreview: Express.Multer.File,
+  ): Promise<Dish | HttpException> {
+    return this.dishesService.createDish(newDish, dishPreview);
   }
 
   @Put(':id')
+  @UseInterceptors(FileInterceptor('dish-preview'))
   updateDish(
     @Param('id', ParseIntPipe) id: number,
     @Body() dish: UpdateDishDTO,
+    @UploadedFile() dishPreview: Express.Multer.File,
   ): Promise<UpdateDishReponseDTO | HttpException> {
-    return this.dishesService.updateDish(id, dish);
+    return this.dishesService.updateDish(id, dish, dishPreview);
   }
 
   @Patch(':id/categories/add')

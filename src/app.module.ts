@@ -10,8 +10,10 @@ import { CategoriesModule } from './categories/categories.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from '@nestjs/jwt';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { MenusModule } from './menus/menus.module';
+import { SectionsModule } from './sections/sections.module';
 import { OrdersModule } from './orders/orders.module';
-
 
 @Module({
   imports: [
@@ -35,6 +37,9 @@ import { OrdersModule } from './orders/orders.module';
     CategoriesModule,
     AuthModule,
     UsersModule,
+    CloudinaryModule,
+    MenusModule,
+    SectionsModule,
     OrdersModule,
   ],
   controllers: [AppController],
